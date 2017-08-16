@@ -101,9 +101,6 @@ Options
 .. |logfile| replace:: /var/log/salt/minion
 .. |loglevel| replace:: ``warning``
 
-.. include:: _includes/output-options.rst
-
-
 See also
 ========
 
