@@ -24,11 +24,16 @@ GRAINS_CACHE = {}
 
 
 def __virtual__():
+<<<<<<< HEAD
     try:
         if salt.utils.platform.is_proxy() and __opts__['proxy']['proxytype'] == 'fx2':
             return __virtualname__
     except KeyError:
         pass
+=======
+    if salt.utils.platform.is_proxy() and 'proxy' in __opts__ and __opts__['proxy'].get('proxytype') == 'fx2':
+        return __virtualname__
+>>>>>>> upstream
     return False
 
 

@@ -2,7 +2,10 @@
 
 # Import python libs
 from __future__ import absolute_import, print_function, unicode_literals
+<<<<<<< HEAD
 import grp
+=======
+>>>>>>> upstream
 import random
 import string
 
@@ -18,6 +21,12 @@ import salt.utils.files
 import salt.utils.platform
 import salt.utils.stringutils
 
+<<<<<<< HEAD
+=======
+if not salt.utils.platform.is_windows():
+    import grp
+
+>>>>>>> upstream
 
 @skip_if_not_root
 @destructiveTest
@@ -126,6 +135,10 @@ class GroupModuleTest(ModuleCase):
             self.assertFalse(self.run_function('group.add', [self._group], gid=self._gid))
 
     @destructiveTest
+<<<<<<< HEAD
+=======
+    @skipIf(salt.utils.platform.is_windows(), 'Skip on Windows')
+>>>>>>> upstream
     def test_add_system_group(self):
         '''
         Test the add group function with system=True
@@ -144,6 +157,10 @@ class GroupModuleTest(ModuleCase):
                                            [self._group]))
 
     @destructiveTest
+<<<<<<< HEAD
+=======
+    @skipIf(salt.utils.platform.is_windows(), 'Skip on Windows')
+>>>>>>> upstream
     def test_add_system_group_gid(self):
         '''
         Test the add group function with system=True and a specific gid

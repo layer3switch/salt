@@ -483,6 +483,7 @@ def _clear_context():
             pass
 
 
+<<<<<<< HEAD
 def _pull_if_needed(image, client_timeout):
     '''
     Pull the desired image if not present, and return the image ID or name
@@ -497,6 +498,8 @@ def _pull_if_needed(image, client_timeout):
     return image_id
 
 
+=======
+>>>>>>> upstream
 def _get_md5(name, path):
     '''
     Get the MD5 checksum of a file from a container
@@ -3115,8 +3118,13 @@ def create(image,
         # Create a CentOS 7 container that will stay running once started
         salt myminion docker.create centos:7 name=mycent7 interactive=True tty=True command=bash
     '''
+<<<<<<< HEAD
     image_id = image if not kwargs.pop('inspect', True) \
         else _pull_if_needed(image, client_timeout)
+=======
+    if kwargs.pop('inspect', True) and not resolve_image_id(image):
+        pull(image, client_timeout=client_timeout)
+>>>>>>> upstream
 
     kwargs, unused_kwargs = _get_create_kwargs(
         skip_translate=skip_translate,
@@ -3138,7 +3146,11 @@ def create(image,
     )
     time_started = time.time()
     response = _client_wrapper('create_container',
+<<<<<<< HEAD
                                image_id,
+=======
+                               image,
+>>>>>>> upstream
                                name=name,
                                **kwargs)
     response['Time_Elapsed'] = time.time() - time_started
@@ -3232,8 +3244,13 @@ def run_container(image,
         # net1 using automatic IP, net2 using static IPv4 address
         salt myminion docker.run_container myuser/myimage command='perl /scripts/sync.py' networks='{"net1": {}, "net2": {"ipv4_address": "192.168.27.12"}}'
     '''
+<<<<<<< HEAD
     image_id = image if not kwargs.pop('inspect', True) \
         else _pull_if_needed(image, client_timeout)
+=======
+    if kwargs.pop('inspect', True) and not resolve_image_id(image):
+        pull(image, client_timeout=client_timeout)
+>>>>>>> upstream
 
     removed_ids = None
     if name is not None:
@@ -3303,7 +3320,11 @@ def run_container(image,
 
     time_started = time.time()
     # Create the container
+<<<<<<< HEAD
     ret = _client_wrapper('create_container', image_id, name=name, **kwargs)
+=======
+    ret = _client_wrapper('create_container', image, name=name, **kwargs)
+>>>>>>> upstream
 
     if removed_ids:
         ret['Replaces'] = removed_ids

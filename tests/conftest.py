@@ -55,13 +55,24 @@ import salt.log.setup
 from salt.utils.odict import OrderedDict
 
 # Define the pytest plugins we rely on
+<<<<<<< HEAD
 pytest_plugins = ['pytest_catchlog', 'tempdir', 'helpers_namespace']  # pylint: disable=invalid-name
+=======
+pytest_plugins = ['tempdir', 'helpers_namespace']  # pylint: disable=invalid-name
+>>>>>>> upstream
 
 # Define where not to collect tests from
 collect_ignore = ['setup.py']
 
 log = logging.getLogger('salt.testsuite')
 
+<<<<<<< HEAD
+=======
+# Reset logging root handlers
+for handler in logging.root.handlers:
+    logging.root.removeHandler(handler)
+
+>>>>>>> upstream
 
 def pytest_tempdir_basename():
     '''
@@ -197,6 +208,7 @@ def pytest_configure(config):
     called after command line options have been parsed
     and all plugins and initial conftest files been loaded.
     '''
+<<<<<<< HEAD
     # Configure the console logger based on the catch_log settings.
     # Most importantly, shutdown Salt's null, store and temporary logging queue handlers
     catch_log = config.pluginmanager.getplugin('_catch_log')
@@ -216,6 +228,8 @@ def pytest_configure(config):
     # Disable the store logging queue handler
     salt.log.setup.setup_extended_logging({'extension_modules': ''})
 
+=======
+>>>>>>> upstream
     config.addinivalue_line('norecursedirs', os.path.join(CODE_DIR, 'templates'))
     config.addinivalue_line(
         'markers',

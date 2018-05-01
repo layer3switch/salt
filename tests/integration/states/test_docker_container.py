@@ -16,7 +16,11 @@ from tests.support.unit import skipIf
 from tests.support.case import ModuleCase
 from tests.support.docker import with_network, random_name
 from tests.support.paths import FILES, TMP
+<<<<<<< HEAD
 from tests.support.helpers import destructiveTest
+=======
+from tests.support.helpers import destructiveTest, with_tempdir
+>>>>>>> upstream
 from tests.support.mixins import SaltReturnAssertsMixin
 
 # Import Salt Libs
@@ -33,6 +37,7 @@ log = logging.getLogger(__name__)
 IPV6_ENABLED = bool(salt.utils.network.ip_addrs6(include_loopback=True))
 
 
+<<<<<<< HEAD
 def with_temp_dir(func):
     '''
     Generate a temp directory for a test
@@ -51,6 +56,8 @@ def with_temp_dir(func):
     return wrapper
 
 
+=======
+>>>>>>> upstream
 def container_name(func):
     '''
     Generate a randomized name for a container and clean it up afterward
@@ -126,7 +133,11 @@ class DockerContainerTestCase(ModuleCase, SaltReturnAssertsMixin):
         log.debug('ret = %s', ret)
         return ret
 
+<<<<<<< HEAD
     @with_temp_dir
+=======
+    @with_tempdir()
+>>>>>>> upstream
     @container_name
     def test_running_with_no_predefined_volume(self, name, bind_dir_host):
         '''
@@ -569,6 +580,24 @@ class DockerContainerTestCase(ModuleCase, SaltReturnAssertsMixin):
         )
 
     @container_name
+<<<<<<< HEAD
+=======
+    def test_running_image_name(self, name):
+        '''
+        Ensure that we create the container using the image name instead of ID
+        '''
+        ret = self.run_state(
+            'docker_container.running',
+            name=name,
+            image=self.image,
+            shutdown_timeout=1,
+        )
+        self.assertSaltTrueReturn(ret)
+        ret = self.run_function('docker.inspect_container', [name])
+        self.assertEqual(ret['Config']['Image'], self.image)
+
+    @container_name
+>>>>>>> upstream
     def test_env_with_running_container(self, name):
         '''
         docker_container.running environnment part. Testing issue 39838.

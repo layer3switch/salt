@@ -664,6 +664,7 @@ def extracted(name,
         # Neither was passed, default is True
         keep_source = True
 
+<<<<<<< HEAD
     if 'keep_source' in kwargs and 'keep' in kwargs:
         ret.setdefault('warnings', []).append(
             'Both \'keep_source\' and \'keep\' were used. Since these both '
@@ -679,6 +680,8 @@ def extracted(name,
         # Neither was passed, default is True
         keep_source = True
 
+=======
+>>>>>>> upstream
     if not _path_is_abs(name):
         ret['comment'] = '{0} is not an absolute path'.format(name)
         return ret

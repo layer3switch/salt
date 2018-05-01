@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 pytest
+=======
+pytest>=3.5.0
+>>>>>>> upstream
 pytest-helpers-namespace
 pytest-tempdir

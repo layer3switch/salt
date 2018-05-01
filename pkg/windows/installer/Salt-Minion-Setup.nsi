@@ -658,11 +658,19 @@ Section -Post
     WriteRegStr HKLM "${PRODUCT_MINION_REGKEY}" "Path" "$INSTDIR\bin\"
 
     # Register the Salt-Minion Service
+<<<<<<< HEAD
     nsExec::Exec "nssm.exe install salt-minion $INSTDIR\bin\python.exe -E -s $INSTDIR\bin\Scripts\salt-minion -c $INSTDIR\conf -l quiet"
     nsExec::Exec "nssm.exe set salt-minion Description Salt Minion from saltstack.com"
     nsExec::Exec "nssm.exe set salt-minion Start SERVICE_AUTO_START"
     nsExec::Exec "nssm.exe set salt-minion AppStopMethodConsole 24000"
     nsExec::Exec "nssm.exe set salt-minion AppStopMethodWindow 2000"
+=======
+    nsExec::Exec "$INSTDIR\bin\ssm.exe install salt-minion $INSTDIR\bin\python.exe -E -s $INSTDIR\bin\Scripts\salt-minion -c $INSTDIR\conf -l quiet"
+    nsExec::Exec "$INSTDIR\bin\ssm.exe set salt-minion Description Salt Minion from saltstack.com"
+    nsExec::Exec "$INSTDIR\bin\ssm.exe set salt-minion Start SERVICE_AUTO_START"
+    nsExec::Exec "$INSTDIR\bin\ssm.exe set salt-minion AppStopMethodConsole 24000"
+    nsExec::Exec "$INSTDIR\bin\ssm.exe set salt-minion AppStopMethodWindow 2000"
+>>>>>>> upstream
 
     ${IfNot} $ConfigType_State == "Existing Config"  # If not using Existing Config
         Call updateMinionConfig
@@ -680,7 +688,11 @@ Function .onInstSuccess
 
     # If StartMinionDelayed is 1, then set the service to start delayed
     ${If} $StartMinionDelayed == 1
+<<<<<<< HEAD
         nsExec::Exec "nssm.exe set salt-minion Start SERVICE_DELAYED_AUTO_START"
+=======
+        nsExec::Exec "$INSTDIR\bin\ssm.exe set salt-minion Start SERVICE_DELAYED_AUTO_START"
+>>>>>>> upstream
     ${EndIf}
 
     # If start-minion is 1, then start the service

@@ -14,10 +14,16 @@ __virtualname__ = 'marathon'
 
 
 def __virtual__():
+<<<<<<< HEAD
     if not salt.utils.platform.is_proxy() or 'proxy' not in __opts__:
         return False
     else:
         return __virtualname__
+=======
+    if salt.utils.platform.is_proxy() and 'proxy' in __opts__ and __opts__['proxy'].get('proxytype') == 'marathon':
+        return __virtualname__
+    return False
+>>>>>>> upstream
 
 
 def kernel():

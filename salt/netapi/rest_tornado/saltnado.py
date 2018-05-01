@@ -129,6 +129,7 @@ The following example (in JSON format) causes Salt to execute two commands::
         "fun": "jobs.lookup_jid",
         "jid": "20130603122505459265"
     }]
+<<<<<<< HEAD
 
 Multiple commands in a Salt API request will be executed in serial and makes
 no gaurantees that all commands will run. Meaning that if test.fib (from the
@@ -172,6 +173,51 @@ a return like::
       ``arg[]=two``. This is not supported; send JSON or YAML instead.
 
 
+=======
+
+Multiple commands in a Salt API request will be executed in serial and makes
+no gaurantees that all commands will run. Meaning that if test.fib (from the
+example above) had an exception, the API would still execute "jobs.lookup_jid".
+
+Responses to these lowstates are an in-order list of dicts containing the
+return data, a yaml response could look like::
+
+    - ms-1: true
+      ms-2: true
+    - ms-1: foo
+      ms-2: bar
+
+In the event of an exception while executing a command the return for that lowstate
+will be a string, for example if no minions matched the first lowstate we would get
+a return like::
+
+    - No minions matched the target. No command was sent, no jid was assigned.
+    - ms-1: true
+      ms-2: true
+
+.. admonition:: x-www-form-urlencoded
+
+    Sending JSON or YAML in the request body is simple and most flexible,
+    however sending data in urlencoded format is also supported with the
+    caveats below. It is the default format for HTML forms, many JavaScript
+    libraries, and the :command:`curl` command.
+
+    For example, the equivalent to running ``salt '*' test.ping`` is sending
+    ``fun=test.ping&arg&client=local&tgt=*`` in the HTTP request body.
+
+    Caveats:
+
+    * Only a single command may be sent per HTTP request.
+    * Repeating the ``arg`` parameter multiple times will cause those
+      parameters to be combined into a single list.
+
+      Note, some popular frameworks and languages (notably jQuery, PHP, and
+      Ruby on Rails) will automatically append empty brackets onto repeated
+      parameters. E.g., ``arg=one``, ``arg=two`` will be sent as ``arg[]=one``,
+      ``arg[]=two``. This is not supported; send JSON or YAML instead.
+
+
+>>>>>>> upstream
 .. |req_token| replace:: a session token from :py:class:`~SaltAuthHandler`.
 .. |req_accept| replace:: the desired response format.
 .. |req_ct| replace:: the format of the request body.
@@ -202,19 +248,30 @@ import tornado.ioloop
 import tornado.web
 import tornado.gen
 from tornado.concurrent import Future
+<<<<<<< HEAD
 from zmq.eventloop import ioloop
 from salt.ext import six
 # pylint: enable=import-error
 
 # instantiate the zmq IOLoop (specialized poller)
 ioloop.install()
+=======
+# pylint: enable=import-error
+import salt.utils
+salt.utils.zeromq.install_zmq()
+>>>>>>> upstream
 
 # salt imports
+import salt.ext.six as six
 import salt.netapi
 import salt.utils.args
 import salt.utils.event
 import salt.utils.json
 import salt.utils.yaml
+<<<<<<< HEAD
+=======
+import salt.utils.minions
+>>>>>>> upstream
 from salt.utils.event import tagify
 import salt.client
 import salt.runner
@@ -269,7 +326,10 @@ class Any(Future):
         # Any is completed once one is done, we don't set for the rest
         if not self.done():
             self.set_result(future)
+<<<<<<< HEAD
+=======
 
+>>>>>>> upstream
 
 class EventListener(object):
     '''
@@ -278,6 +338,16 @@ class EventListener(object):
     non-blocking work in the main processes and "wait" for an event to happen
     '''
 
+<<<<<<< HEAD
+class EventListener(object):
+    '''
+    Class responsible for listening to the salt master event bus and updating
+    futures. This is the core of what makes this async, this allows us to do
+    non-blocking work in the main processes and "wait" for an event to happen
+    '''
+
+=======
+>>>>>>> upstream
     def __init__(self, mod_opts, opts):
         self.mod_opts = mod_opts
         self.opts = opts
@@ -383,12 +453,28 @@ class EventListener(object):
         for (tag, matcher), futures in six.iteritems(self.tag_map):
             try:
                 is_matched = matcher(mtag, tag)
+<<<<<<< HEAD
             except Exception as e:
+=======
+            except Exception:
+>>>>>>> upstream
                 log.error('Failed to run a matcher.', exc_info=True)
                 is_matched = False
 
             if not is_matched:
                 continue
+<<<<<<< HEAD
+=======
+
+            for future in futures:
+                if future.done():
+                    continue
+                future.set_result({'data': data, 'tag': mtag})
+                self.tag_map[(tag, matcher)].remove(future)
+                if future in self.timeout_map:
+                    tornado.ioloop.IOLoop.current().remove_timeout(self.timeout_map[future])
+                    del self.timeout_map[future]
+>>>>>>> upstream
 
             for future in futures:
                 if future.done():
@@ -399,7 +485,10 @@ class EventListener(object):
                     tornado.ioloop.IOLoop.current().remove_timeout(self.timeout_map[future])
                     del self.timeout_map[future]
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream
 class BaseSaltAPIHandler(tornado.web.RequestHandler):  # pylint: disable=W0223
     ct_out_map = (
         ('application/json', _json_dumps),
@@ -437,6 +526,12 @@ class BaseSaltAPIHandler(tornado.web.RequestHandler):  # pylint: disable=W0223
                 'runner': salt.runner.RunnerClient(opts=self.application.opts).cmd_async,
                 'runner_async': None,  # empty, since we use the same client as `runner`
                 }
+<<<<<<< HEAD
+=======
+
+        if not hasattr(self, 'ckminions'):
+            self.ckminions = salt.utils.minions.CkMinions(self.application.opts)
+>>>>>>> upstream
 
     @property
     def token(self):
@@ -560,10 +655,17 @@ class BaseSaltAPIHandler(tornado.web.RequestHandler):  # pylint: disable=W0223
             return
         data = self.deserialize(self.request.body)
         self.request_payload = copy(data)
+<<<<<<< HEAD
 
         if data and 'arg' in data and not isinstance(data['arg'], list):
             data['arg'] = [data['arg']]
 
+=======
+
+        if data and 'arg' in data and not isinstance(data['arg'], list):
+            data['arg'] = [data['arg']]
+
+>>>>>>> upstream
         if not isinstance(data, list):
             lowstate = [data]
         else:
@@ -597,6 +699,7 @@ class BaseSaltAPIHandler(tornado.web.RequestHandler):  # pylint: disable=W0223
 
         # Allow request headers
         self.set_header('Access-Control-Allow-Headers', ','.join(allowed_headers))
+<<<<<<< HEAD
 
         # Allow X-Auth-Token in responses
         self.set_header('Access-Control-Expose-Headers', 'X-Auth-Token')
@@ -604,6 +707,15 @@ class BaseSaltAPIHandler(tornado.web.RequestHandler):  # pylint: disable=W0223
         # Allow all methods
         self.set_header('Access-Control-Allow-Methods', 'OPTIONS, GET, POST')
 
+=======
+
+        # Allow X-Auth-Token in responses
+        self.set_header('Access-Control-Expose-Headers', 'X-Auth-Token')
+
+        # Allow all methods
+        self.set_header('Access-Control-Allow-Methods', 'OPTIONS, GET, POST')
+
+>>>>>>> upstream
         self.set_status(204)
         self.finish()
 
@@ -838,10 +950,17 @@ class SaltAPIHandler(BaseSaltAPIHandler):  # pylint: disable=W0223
             :status 200: |200|
             :status 401: |401|
             :status 406: |406|
+<<<<<<< HEAD
 
             :term:`lowstate` data describing Salt commands must be sent in the
             request body.
 
+=======
+
+            :term:`lowstate` data describing Salt commands must be sent in the
+            request body.
+
+>>>>>>> upstream
         **Example request:**
 
         .. code-block:: bash
@@ -939,6 +1058,7 @@ class SaltAPIHandler(BaseSaltAPIHandler):  # pylint: disable=W0223
         '''
         Dispatch local client commands
         '''
+<<<<<<< HEAD
         chunk_ret = {}
 
         f_call = self._format_call_run_job_async(chunk)
@@ -1049,6 +1169,108 @@ class SaltAPIHandler(BaseSaltAPIHandler):  # pylint: disable=W0223
         if minions_remaining is None:
             minions_remaining = []
 
+=======
+        # Generate jid before triggering a job to subscribe all returns from minions
+        chunk['jid'] = salt.utils.jid.gen_jid(self.application.opts)
+
+        # Subscribe returns from minions before firing a job
+        minions = self.ckminions.check_minions(chunk['tgt'], chunk.get('tgt_type', 'glob')).get('minions', list())
+        future_minion_map = self.subscribe_minion_returns(chunk['jid'], minions)
+
+        f_call = self._format_call_run_job_async(chunk)
+        # fire a job off
+        pub_data = yield self.saltclients['local'](*f_call.get('args', ()), **f_call.get('kwargs', {}))
+
+        # if the job didn't publish, lets not wait around for nothing
+        # TODO: set header??
+        if 'jid' not in pub_data:
+            for future in future_minion_map:
+                try:
+                    future.set_result(None)
+                except Exception:
+                    pass
+            raise tornado.gen.Return('No minions matched the target. No command was sent, no jid was assigned.')
+
+        # wait syndic a while to avoid missing published events
+        if self.application.opts['order_masters']:
+            yield tornado.gen.sleep(self.application.opts['syndic_wait'])
+
+        # To ensure job_not_running and all_return are terminated by each other, communicate using a future
+        is_finished = Future()
+
+        job_not_running_future = self.job_not_running(pub_data['jid'],
+                                                      chunk['tgt'],
+                                                      f_call['kwargs']['tgt_type'],
+                                                      is_finished)
+
+        minion_returns_future = self.sanitize_minion_returns(future_minion_map, pub_data['minions'], is_finished)
+
+        yield job_not_running_future
+        raise tornado.gen.Return((yield minion_returns_future))
+
+    def subscribe_minion_returns(self, jid, minions):
+        # Subscribe each minion event
+        future_minion_map = {}
+        for minion in minions:
+            tag = tagify([jid, 'ret', minion], 'job')
+            minion_future = self.application.event_listener.get_event(self,
+                                                                      tag=tag,
+                                                                      matcher=EventListener.exact_matcher)
+            future_minion_map[minion_future] = minion
+        return future_minion_map
+
+    @tornado.gen.coroutine
+    def sanitize_minion_returns(self, future_minion_map, minions, is_finished):
+        '''
+        Return a future which will complete once all returns are completed
+        (according to minions), or one of the passed in "finish_chunk_ret_future" completes
+        '''
+        if minions is None:
+            minions = []
+
+        # Remove redundant minions
+        redundant_minion_futures = [future for future in future_minion_map.keys() if future_minion_map[future] not in minions]
+        for redundant_minion_future in redundant_minion_futures:
+            try:
+                redundant_minion_future.set_result(None)
+            except Exception:
+                pass
+            del future_minion_map[redundant_minion_future]
+
+        chunk_ret = {}
+        while True:
+            f = yield Any(list(future_minion_map.keys()) + [is_finished])
+            try:
+                # When finished entire routine, cleanup other futures and return result
+                if f is is_finished:
+                    for event in future_minion_map.keys():
+                        if not event.done():
+                            event.set_result(None)
+                    raise tornado.gen.Return(chunk_ret)
+                f_result = f.result()
+                chunk_ret[f_result['data']['id']] = f_result['data']['return']
+            except TimeoutException:
+                pass
+
+            # clear finished event future
+            try:
+                minions.remove(future_minion_map[f])
+                del future_minion_map[f]
+            except ValueError:
+                pass
+
+            if not minions:
+                if not is_finished.done():
+                    is_finished.set_result(True)
+                raise tornado.gen.Return(chunk_ret)
+
+    @tornado.gen.coroutine
+    def job_not_running(self, jid, tgt, tgt_type, is_finished):
+        '''
+        Return a future which will complete once jid (passed in) is no longer
+        running on tgt
+        '''
+>>>>>>> upstream
         ping_pub_data = yield self.saltclients['local'](tgt,
                                                         'saltutil.find_job',
                                                         [jid],
@@ -1081,13 +1303,20 @@ class SaltAPIHandler(BaseSaltAPIHandler):  # pylint: disable=W0223
                     ping_tag = tagify([ping_pub_data['jid'], 'ret'], 'job')
                     minion_running = False
                     continue
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream
             # Minions can return, we want to see if the job is running...
             if event['data'].get('return', {}) == {}:
                 continue
             minion_running = True
+<<<<<<< HEAD
             id_ = event['data']['id']
             if id_ not in minions_remaining:
                 minions_remaining.append(event['data']['id'])
+=======
+>>>>>>> upstream
 
     @tornado.gen.coroutine
     def _disbatch_local_async(self, chunk):
@@ -1259,10 +1488,18 @@ class MinionSaltAPIHandler(SaltAPIHandler):  # pylint: disable=W0223
                 self.write('We don\'t serve your kind here')
                 self.finish()
                 return
+<<<<<<< HEAD
+=======
+
+        self.disbatch()
+>>>>>>> upstream
 
         self.disbatch()
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream
 class JobsSaltAPIHandler(SaltAPIHandler):  # pylint: disable=W0223
     '''
     A convenience endpoint for job cache data
